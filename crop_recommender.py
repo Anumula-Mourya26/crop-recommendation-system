@@ -1,68 +1,114 @@
 import streamlit as st
 import requests
 import pandas as pd
-    
-# --- 1. Mock Database (Expanded) ---
+
+# --- 1. Mock Database (Massively Expanded) ---
 CROP_DATABASE = [
-    # Cereals & Grains
+    # 🌾 Cereals & Grains
     {"name": "Rice", "soil": "Clay", "water": "High", "min_temp": 20, "max_temp": 35, "harvest_time": "4-5 Months",
      "price": "₹2,200 / quintal"},
     {"name": "Wheat", "soil": "Loamy", "water": "Moderate", "min_temp": 10, "max_temp": 25,
      "harvest_time": "4-5 Months", "price": "₹2,125 / quintal"},
     {"name": "Maize", "soil": "Sandy", "water": "Low", "min_temp": 18, "max_temp": 27, "harvest_time": "3-4 Months",
      "price": "₹1,960 / quintal"},
-    {"name": "Millets", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 35, "harvest_time": "2-3 Months",
-     "price": "₹2,500 / quintal"},
-    {"name": "Sorghum (Jowar)", "soil": "Black", "water": "Low", "min_temp": 25, "max_temp": 32,
-     "harvest_time": "3-4 Months", "price": "₹3,180 / quintal"},
     {"name": "Barley", "soil": "Loamy", "water": "Moderate", "min_temp": 12, "max_temp": 32,
      "harvest_time": "4-5 Months", "price": "₹2,000 / quintal"},
+    {"name": "Sorghum (Jowar)", "soil": "Black", "water": "Low", "min_temp": 25, "max_temp": 32,
+     "harvest_time": "3-4 Months", "price": "₹3,180 / quintal"},
+    {"name": "Pearl Millet (Bajra)", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 35,
+     "harvest_time": "2-3 Months", "price": "₹2,500 / quintal"},
+    {"name": "Finger Millet (Ragi)", "soil": "Loamy", "water": "Low", "min_temp": 20, "max_temp": 30,
+     "harvest_time": "3-4 Months", "price": "₹3,846 / quintal"},
+    {"name": "Oats", "soil": "Loamy", "water": "Moderate", "min_temp": 15, "max_temp": 25, "harvest_time": "3-4 Months",
+     "price": "₹2,500 / quintal"},
 
-    # Cash Crops
+    # 💰 Cash Crops & Fibers
     {"name": "Cotton", "soil": "Black", "water": "Moderate", "min_temp": 21, "max_temp": 30,
      "harvest_time": "5-6 Months", "price": "₹7,000 / quintal"},
     {"name": "Sugarcane", "soil": "Loamy", "water": "High", "min_temp": 20, "max_temp": 35,
      "harvest_time": "10-12 Months", "price": "₹315 / quintal"},
     {"name": "Jute", "soil": "Clay", "water": "High", "min_temp": 24, "max_temp": 38, "harvest_time": "4-5 Months",
      "price": "₹5,050 / quintal"},
+    {"name": "Tobacco", "soil": "Loamy", "water": "Moderate", "min_temp": 20, "max_temp": 30,
+     "harvest_time": "4-5 Months", "price": "₹8,500 / quintal"},
 
-    # Oilseeds & Pulses
-    {"name": "Soybean", "soil": "Loamy", "water": "Moderate", "min_temp": 20, "max_temp": 30,
+    # 🥜 Oilseeds
+    {"name": "Soybean", "soil": "Black", "water": "Moderate", "min_temp": 20, "max_temp": 30,
      "harvest_time": "3-4 Months", "price": "₹4,600 / quintal"},
     {"name": "Groundnut", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 35, "harvest_time": "4-5 Months",
      "price": "₹6,377 / quintal"},
-    {"name": "Gram (Chickpea)", "soil": "Loamy", "water": "Low", "min_temp": 20, "max_temp": 30,
-     "harvest_time": "4-5 Months", "price": "₹5,335 / quintal"},
     {"name": "Mustard", "soil": "Loamy", "water": "Low", "min_temp": 10, "max_temp": 25, "harvest_time": "4-5 Months",
      "price": "₹5,450 / quintal"},
+    {"name": "Sunflower", "soil": "Black", "water": "Moderate", "min_temp": 20, "max_temp": 30,
+     "harvest_time": "3-4 Months", "price": "₹6,760 / quintal"},
+    {"name": "Sesame (Til)", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 35,
+     "harvest_time": "3-4 Months", "price": "₹8,635 / quintal"},
+    {"name": "Castor", "soil": "Sandy", "water": "Low", "min_temp": 20, "max_temp": 32, "harvest_time": "5-6 Months",
+     "price": "₹7,000 / quintal"},
 
-    # Vegetables & Tubers
+    # 🌱 Pulses (Legumes)
+    {"name": "Gram (Chickpea)", "soil": "Loamy", "water": "Low", "min_temp": 15, "max_temp": 30,
+     "harvest_time": "4-5 Months", "price": "₹5,335 / quintal"},
+    {"name": "Pigeon Pea (Tur/Arhar)", "soil": "Loamy", "water": "Moderate", "min_temp": 25, "max_temp": 35,
+     "harvest_time": "5-6 Months", "price": "₹7,000 / quintal"},
+    {"name": "Lentil (Masoor)", "soil": "Clay", "water": "Low", "min_temp": 15, "max_temp": 25,
+     "harvest_time": "3-4 Months", "price": "₹6,000 / quintal"},
+    {"name": "Green Gram (Moong)", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 35,
+     "harvest_time": "2-3 Months", "price": "₹8,558 / quintal"},
+
+    # 🍅 Vegetables & Tubers
     {"name": "Potato", "soil": "Sandy", "water": "Moderate", "min_temp": 15, "max_temp": 25,
      "harvest_time": "3-4 Months", "price": "₹1,500 / quintal"},
     {"name": "Tomato", "soil": "Loamy", "water": "Moderate", "min_temp": 21, "max_temp": 27,
      "harvest_time": "3-4 Months", "price": "₹2,000 / quintal"},
     {"name": "Onion", "soil": "Loamy", "water": "Low", "min_temp": 15, "max_temp": 30, "harvest_time": "4-5 Months",
      "price": "₹1,800 / quintal"},
+    {"name": "Cabbage", "soil": "Clay", "water": "Moderate", "min_temp": 15, "max_temp": 25,
+     "harvest_time": "3-4 Months", "price": "₹1,200 / quintal"},
+    {"name": "Brinjal (Eggplant)", "soil": "Loamy", "water": "Moderate", "min_temp": 22, "max_temp": 30,
+     "harvest_time": "4-5 Months", "price": "₹1,600 / quintal"},
+    {"name": "Carrot", "soil": "Sandy", "water": "Moderate", "min_temp": 10, "max_temp": 20,
+     "harvest_time": "3-4 Months", "price": "₹2,500 / quintal"},
 
-    # Plantation & Beverage Crops
+    # ☕ Plantations & Fruits
     {"name": "Coffee (Arabica)", "soil": "Loamy", "water": "Moderate", "min_temp": 15, "max_temp": 25,
      "harvest_time": "Annual (Nov-Jan)", "price": "₹28,000 / quintal"},
-    {"name": "Coffee (Robusta)", "soil": "Loamy", "water": "High", "min_temp": 20, "max_temp": 30,
-     "harvest_time": "Annual (Dec-Feb)", "price": "₹22,000 / quintal"},
     {"name": "Tea", "soil": "Loamy", "water": "High", "min_temp": 13, "max_temp": 32,
      "harvest_time": "Continuous Plucking", "price": "₹25,000 / quintal"},
     {"name": "Rubber", "soil": "Loamy", "water": "High", "min_temp": 25, "max_temp": 34,
      "harvest_time": "Continuous Tapping", "price": "₹15,000 / quintal"},
+    {"name": "Coconut", "soil": "Sandy", "water": "High", "min_temp": 27, "max_temp": 35, "harvest_time": "Year-round",
+     "price": "₹3,000 / hundred nuts"},
+    {"name": "Apple", "soil": "Loamy", "water": "Moderate", "min_temp": 5, "max_temp": 25,
+     "harvest_time": "Annual (Aug-Oct)", "price": "₹8,000 / quintal"},
+    {"name": "Banana", "soil": "Loamy", "water": "High", "min_temp": 26, "max_temp": 32, "harvest_time": "10-12 Months",
+     "price": "₹1,500 / quintal"},
+    {"name": "Mango", "soil": "Loamy", "water": "Moderate", "min_temp": 24, "max_temp": 30,
+     "harvest_time": "Annual (Summer)", "price": "₹5,000 / quintal"},
+    {"name": "Watermelon", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 35, "harvest_time": "3 Months",
+     "price": "₹1,000 / quintal"},
 
-    # Spices (Good for Southern states)
+    # 🌶️ Spices & Specialty
     {"name": "Black Pepper", "soil": "Loamy", "water": "High", "min_temp": 20, "max_temp": 30,
      "harvest_time": "Annual (Dec-Mar)", "price": "₹50,000 / quintal"},
-    {"name": "Cardamom", "soil": "Loamy", "water": "High", "min_temp": 15, "max_temp": 25,
-     "harvest_time": "Annual (Aug-Dec)", "price": "₹1,50,000 / quintal"},
+    {"name": "Turmeric", "soil": "Clay", "water": "Moderate", "min_temp": 20, "max_temp": 30,
+     "harvest_time": "7-9 Months", "price": "₹8,000 / quintal"},
+    {"name": "Ginger", "soil": "Loamy", "water": "Moderate", "min_temp": 20, "max_temp": 30,
+     "harvest_time": "8-9 Months", "price": "₹7,500 / quintal"},
 
-    # Cold Weather / Hill Crops (Good for Himachal Pradesh testing)
-    {"name": "Apple", "soil": "Loamy", "water": "Moderate", "min_temp": 5, "max_temp": 25,
-     "harvest_time": "Annual (Aug-Oct)", "price": "₹8,000 / quintal"}
+    # 🌵 Edge-Case / Arid Crops (For Hot, Dry, Sandy conditions)
+    {"name": "Aloe Vera", "soil": "Sandy", "water": "Low", "min_temp": 20, "max_temp": 40,
+     "harvest_time": "18-24 Months", "price": "₹2,500 / quintal"},
+    {"name": "Guar (Cluster Bean)", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 40,
+     "harvest_time": "3-4 Months", "price": "₹4,500 / quintal"},
+    {"name": "Date Palm", "soil": "Sandy", "water": "Low", "min_temp": 25, "max_temp": 45,
+     "harvest_time": "Annual (Late Summer)", "price": "₹10,000 / quintal"},
+
+    # 🏔️ Edge-Case / High Altitude (For Cold conditions)
+    {"name": "Saffron", "soil": "Loamy", "water": "Low", "min_temp": 0, "max_temp": 20,
+     "harvest_time": "Annual (Autumn)", "price": "₹3,00,000 / kg"},
+    {"name": "Green Peas", "soil": "Loamy", "water": "Moderate", "min_temp": 10, "max_temp": 20,
+     "harvest_time": "2-3 Months", "price": "₹4,000 / quintal"}
 ]
 
 # State coordinates for the Weather API (Expanded)
