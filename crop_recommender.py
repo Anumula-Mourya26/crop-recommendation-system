@@ -166,7 +166,7 @@ def recommend_crops(soil, water, current_temp):
 # --- 4. User Interface (Streamlit) (UPDATED) ---
 def main():
     st.set_page_config(page_title="AgriSuggest", layout="centered")
-    st.title("🌱 Intelligent Crop Recommendation System")
+    st.title("🌱 Crop Recommendation System")
     st.write("Enter your field details below to get data-driven crop suggestions based on real-time climate data.")
 
     # UI Inputs
